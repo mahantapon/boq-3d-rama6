@@ -12,7 +12,7 @@
 :root{
   --bg:#edf0ec; --panel:#f8faf7; --raise:#ffffff; --ink:#1b2320; --muted:#4f5c56; --faint:#7d8a84;
   --line:#d3d9d4; --line2:#e6eae6; --accent:#c98d00; --accent-soft:#fbefcb; --accent-ink:#3b2a00;
-  --scene:#e3e7e2; --edge:#28302c; --note:#fff4d6; --note-ink:#5a4200; --warn:#b4432f; --secbg:#eef2ed;
+  --scene:#e3e7e2; --edge:#28302c; --paper:#fbfcfa; --wall2d:#4b453d; --exwall2d:#a3a8a3; --hl:#e4570b; --hl-edge:#7a2600; --dimop:.1; --note:#fff4d6; --note-ink:#5a4200; --warn:#b4432f; --secbg:#eef2ed;
   --sA-bg:#dcefd8; --sA-fg:#2c6a2c; --sB-bg:#fff0c4; --sB-fg:#775700; --sC-bg:#fbe2d3; --sC-fg:#983f0c;
   --sD-bg:#e6e6e4; --sD-fg:#4a4a4a; --sE-bg:#f6c9b5; --sE-fg:#86200f; --sF-bg:#d9e8f6; --sF-fg:#1e4c78;
   --f:"LINE Seed Sans TH","Noto Sans Thai",system-ui,sans-serif;
@@ -20,14 +20,14 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#111614; --panel:#171d1a; --raise:#1e2521; --ink:#e4eae6; --muted:#a3b0aa; --faint:#75827c;
   --line:#2b3430; --line2:#232b27; --accent:#f0b318; --accent-soft:#3a2f12; --accent-ink:#ffe7a3;
-  --scene:#151b18; --edge:#c9d2cd; --note:#3a3014; --note-ink:#f3dc9b; --warn:#f08a73; --secbg:#1c2420;
+  --scene:#151b18; --edge:#c9d2cd; --paper:#141a17; --wall2d:#d9cdb5; --exwall2d:#5d6460; --hl:#ff7a1f; --hl-edge:#ffd2b0; --dimop:.12; --note:#3a3014; --note-ink:#f3dc9b; --warn:#f08a73; --secbg:#1c2420;
   --sA-bg:#1f3a20; --sA-fg:#a6dba0; --sB-bg:#3d3312; --sB-fg:#f2d27a; --sC-bg:#40261a; --sC-fg:#f3b08c;
   --sD-bg:#2b2d2c; --sD-fg:#c3c6c4; --sE-bg:#4a2219; --sE-fg:#ffab95; --sF-bg:#1b2f44; --sF-fg:#a9cdf1;
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#111614; --panel:#171d1a; --raise:#1e2521; --ink:#e4eae6; --muted:#a3b0aa; --faint:#75827c;
   --line:#2b3430; --line2:#232b27; --accent:#f0b318; --accent-soft:#3a2f12; --accent-ink:#ffe7a3;
-  --scene:#151b18; --edge:#c9d2cd; --note:#3a3014; --note-ink:#f3dc9b; --warn:#f08a73; --secbg:#1c2420;
+  --scene:#151b18; --edge:#c9d2cd; --paper:#141a17; --wall2d:#d9cdb5; --exwall2d:#5d6460; --hl:#ff7a1f; --hl-edge:#ffd2b0; --dimop:.12; --note:#3a3014; --note-ink:#f3dc9b; --warn:#f08a73; --secbg:#1c2420;
   --sA-bg:#1f3a20; --sA-fg:#a6dba0; --sB-bg:#3d3312; --sB-fg:#f2d27a; --sC-bg:#40261a; --sC-fg:#f3b08c;
   --sD-bg:#2b2d2c; --sD-fg:#c3c6c4; --sE-bg:#4a2219; --sE-fg:#ffab95; --sF-bg:#1b2f44; --sF-fg:#a9cdf1;
   color-scheme:dark}
@@ -101,9 +101,36 @@ body.noprice .price{display:none!important}
 .seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
 .slider{display:inline-flex;align-items:center;gap:8px;background:var(--raise);border:1px solid var(--line);border-radius:8px;padding:4px 12px;font-size:13.5px;white-space:nowrap}
 .slider input{width:100px;accent-color:var(--accent)}
-.stage{position:relative;flex:1;min-height:0;overflow:hidden}
+.stage{position:relative;flex:1;min-height:0;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+.stage[data-mode="3d"] .p2d,.stage[data-mode="2d"] .p3d{display:none}
+.stage[data-mode="split"]{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.stage[data-mode="split"].narrow{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr)}
+.stage[data-mode="split"] .p2d{border-right:1px solid var(--line)}
+.stage[data-mode="split"].narrow .p2d{border-right:0;border-bottom:1px solid var(--line)}
+.vpane.m2d .only3d{display:none!important}
+.p3d,.p2d{position:relative;min-width:0;min-height:0;overflow:hidden}
+.p2d{background:var(--paper)}
+#svg2d{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;user-select:none}
+#svg2d.drag{cursor:grabbing}
+#svg2d .e{cursor:pointer}
+#svg2d .e *{vector-effect:non-scaling-stroke}
+#svg2d .ceilo{fill:none!important;stroke-dasharray:5 4}
+#svg2d.sel .e:not(.hl){opacity:var(--dimop)}
+#svg2d .e.hl *{fill:var(--hl)!important;stroke:var(--hl-edge)!important;fill-opacity:1!important;stroke-width:1.6px}
+#svg2d .e.hl .ceilo{fill:var(--hl)!important;fill-opacity:.35!important}
+#svg2d .e:hover *{stroke:var(--hl)}
+#svg2d .grid line{stroke:var(--faint);stroke-dasharray:6 4;stroke-width:1px;vector-effect:non-scaling-stroke}
+#svg2d .bub circle{fill:var(--raise);stroke:var(--edge);stroke-width:1.3px;vector-effect:non-scaling-stroke}
+#svg2d .bub text{font-size:.36px;font-weight:700;fill:var(--ink);text-anchor:middle;dominant-baseline:central}
+#svg2d .rm{font-size:.3px;font-weight:700;fill:var(--ink);text-anchor:middle;dominant-baseline:central;paint-order:stroke;stroke:var(--paper);stroke-width:.08px;pointer-events:none}
+#svg2d .side{font-size:.3px;fill:var(--muted);text-anchor:middle;pointer-events:none}
+.ptitle{position:absolute;left:12px;top:10px;font-size:13.5px;font-weight:700;background:color-mix(in srgb,var(--raise) 88%,transparent);border:1px solid var(--line);border-radius:6px;padding:3px 10px;pointer-events:none}
+.zoom2d{position:absolute;right:10px;top:10px;display:flex;gap:4px}
+.zoom2d button{border:1px solid var(--line);background:var(--raise);border-radius:6px;min-width:32px;height:32px;padding:0 9px;cursor:pointer;font-size:14px}
+.empty2d{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:15px}
+.seg.strong button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 #canvas,#canvas canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
-.hint{position:absolute;left:12px;bottom:10px;right:12px;font-size:12.5px;color:var(--muted);pointer-events:none;text-shadow:0 0 4px var(--scene),0 0 2px var(--scene)}
+.hint{position:absolute;left:12px;bottom:10px;right:12px;z-index:2;font-size:12.5px;color:var(--muted);pointer-events:none;text-shadow:0 0 4px var(--scene),0 0 2px var(--scene)}
 .labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .rl{position:absolute;left:0;top:0;transform:translate(-50%,-50%);font-weight:700;font-size:12.5px;color:var(--ink);background:color-mix(in srgb,var(--raise) 82%,transparent);border:1px solid var(--line);padding:2px 8px;border-radius:5px;white-space:nowrap}
 .gl{position:absolute;left:0;top:0;transform:translate(-50%,-50%);width:24px;height:24px;border-radius:50%;border:1.5px solid var(--edge);display:grid;place-items:center;font-size:12px;font-weight:700;color:var(--ink);background:var(--raise)}
@@ -193,13 +220,13 @@ body.noprice .price{display:none!important}
 .dsec{margin-top:22px}
 .dsec>h3{font-size:16px;margin:0 0 10px}
 .qs{display:flex;flex-direction:column;gap:12px}
-.q{border:1px solid var(--line);background:var(--raise);border-radius:10px;padding:14px 16px;display:grid;grid-template-columns:34px minmax(0,1fr);gap:4px 10px}
-.q .qn{font-weight:700;font-size:15px;color:var(--accent)}
-.q h4{margin:0;font-size:15px;line-height:1.5}
-.q dl{grid-column:2;margin:4px 0 0;display:grid;grid-template-columns:150px minmax(0,1fr);gap:6px 14px;font-size:13.5px}
-.q dt{color:var(--faint)}
-.q dd{margin:0;white-space:pre-line}
-.q dd.as{background:var(--note);color:var(--note-ink);border-radius:6px;padding:4px 8px;margin:-4px 0 0}
+.qcard{border:1px solid var(--line);background:var(--raise);border-radius:10px;padding:14px 16px;display:grid;grid-template-columns:34px minmax(0,1fr);gap:4px 10px}
+.qcard .qn{font-weight:700;font-size:15px;color:var(--accent)}
+.qcard h4{margin:0;font-size:15px;line-height:1.5}
+.qcard dl{grid-column:2;margin:4px 0 0;display:grid;grid-template-columns:150px minmax(0,1fr);gap:6px 14px;font-size:13.5px}
+.qcard dt{color:var(--faint)}
+.qcard dd{margin:0;white-space:pre-line}
+.qcard dd.as{background:var(--note);color:var(--note-ink);border-radius:6px;padding:4px 8px;margin:-4px 0 0}
 .empty{padding:20px;color:var(--muted)}
 
 @media (max-width:1250px){.main{grid-template-columns:290px minmax(0,1fr) 330px}}
@@ -212,6 +239,7 @@ body.noprice .price{display:none!important}
   .detail{grid-area:d}.detail .scroll{overflow:visible}
   .list{grid-area:l;max-height:75vh}
   .hint{display:none}
+  .vpane.msplit{height:auto}.vpane.msplit .stage{height:118vh;flex:none}
   .slider input{width:80px}
   .bar{flex-wrap:wrap}.floors{flex-basis:100%}
   .pop{left:0;right:auto}.pop .grid{grid-template-columns:minmax(0,1fr)}
@@ -222,7 +250,7 @@ body.noprice .price{display:none!important}
   .dochead .search{width:100%;flex-basis:100%}
   .tbl .dk,.tbl .dk2{display:none!important}.tbl .cd{font-size:12px}.xbtn{display:grid;margin:0 0 4px}.go3d{padding:3px 8px}.tbl tr.der .num{white-space:normal}.tbl .mq{display:block}.tbl .mu{display:inline}.tbl .nm{min-width:0}.tbl td,.tbl th{padding-left:10px;padding-right:10px}
   .docbody{padding:12px 10px 24px}
-  .q{grid-template-columns:minmax(0,1fr)}.q dl{grid-column:1;grid-template-columns:minmax(0,1fr)}.q dt{margin-top:4px}
+  .qcard{grid-template-columns:minmax(0,1fr)}.qcard dl{grid-column:1;grid-template-columns:minmax(0,1fr)}.qcard dt{margin-top:4px}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -267,26 +295,44 @@ body.noprice .price{display:none!important}
       </aside>
       <section class="pane vpane" aria-label="โมเดล 3D">
         <div class="tools">
-          <div class="seg" id="views" role="group" aria-label="มุมมอง">
+          <div class="seg strong" id="modes" role="group" aria-label="โหมดภาพ">
+            <button type="button" data-m="3d" aria-pressed="true">3D</button>
+            <button type="button" data-m="2d" aria-pressed="false">2D ผัง</button>
+            <button type="button" data-m="split" aria-pressed="false">2D + 3D</button>
+          </div>
+          <div class="seg only3d" id="looks" role="group" aria-label="ความทึบของตึก">
+            <button type="button" data-k="solid" aria-pressed="false">ตึกทึบ</button>
+            <button type="button" data-k="xray" aria-pressed="true">โปร่งใส</button>
+          </div>
+          <div class="seg only3d" id="views" role="group" aria-label="มุมมอง">
             <button type="button" data-v="iso" aria-pressed="true">3D</button>
             <button type="button" data-v="top" aria-pressed="false">ด้านบน</button>
             <button type="button" data-v="front" aria-pressed="false">ด้านหน้า</button>
             <button type="button" data-v="side" aria-pressed="false">ด้านข้าง</button>
           </div>
-          <div class="seg" id="levels" role="group" aria-label="แสดงถึงระดับ">
+          <div class="seg only3d" id="levels" role="group" aria-label="แสดงถึงระดับ">
             <button type="button" data-l="all" aria-pressed="true">ทั้งหมด</button>
             <button type="button" data-l="noceil" aria-pressed="false">ซ่อนฝ้า-หลังคา</button>
             <button type="button" data-l="plan" aria-pressed="false">ผังพื้น</button>
           </div>
-          <label class="slider" for="ex">แยกชั้น <input id="ex" type="range" min="0" max="1" step="0.01" value="0"></label>
+          <label class="slider only3d" for="ex">แยกชั้น <input id="ex" type="range" min="0" max="1" step="0.01" value="0"></label>
           <button class="tgl" id="tLab" type="button" aria-pressed="true">ป้ายห้อง</button>
           <button class="tgl" id="tDim" type="button" aria-pressed="true">จางชิ้นอื่น</button>
         </div>
-        <div class="stage" id="viewer">
-          <div id="canvas"></div>
-          <div class="labels" id="labels"></div>
-          <div class="hint">คลิกชิ้นเพื่อดูรายการ BOQ · ลากเพื่อหมุน · ล้อเลื่อน/บีบนิ้วเพื่อซูม · คลิกขวาลากเพื่อเลื่อน · Esc ล้างการเลือก</div>
-          <div class="tip" id="tip" hidden></div>
+        <div class="stage" id="stage" data-mode="3d">
+          <div class="p2d" id="plan2d">
+            <svg id="svg2d" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ผังพื้น 2D"></svg>
+            <div class="ptitle" id="ptitle"></div>
+            <div class="zoom2d"><button type="button" data-z="in" aria-label="ซูมเข้า">+</button><button type="button" data-z="out" aria-label="ซูมออก">−</button><button type="button" data-z="fit">พอดีจอ</button></div>
+            <div class="empty2d" id="empty2d" hidden>เลือกชั้นด้านบนเพื่อดูผัง 2D</div>
+            <div class="tip" id="tip2" hidden></div>
+          </div>
+          <div class="p3d" id="viewer">
+            <div id="canvas"></div>
+            <div class="labels" id="labels"></div>
+            <div class="tip" id="tip" hidden></div>
+          </div>
+          <div class="hint" id="hint">คลิกชิ้นเพื่อดูรายการ BOQ · ลากเพื่อหมุน · ล้อเลื่อน/บีบนิ้วเพื่อซูม · คลิกขวาลากเพื่อเลื่อน · Esc ล้างการเลือก</div>
         </div>
       </section>
       <aside class="pane detail" aria-label="รายละเอียด">
@@ -408,12 +454,30 @@ function buildMats(){
     if (d.e){ m.emissive = new THREE.Color(d.e); m.emissiveIntensity = d.ei ?? .6; }
     if (d.tex){ m.map = RIB; }
     MAT[k] = m;
-    const h = m.clone(); h.emissive = new THREE.Color(accentHex()); h.emissiveIntensity = .55;
-    h.opacity = Math.max(o, .9); h.transparent = h.opacity < 1; h.depthWrite = true; HL[k] = h;
   }
+  const hc = new THREE.Color(hlHex());
+  const H1 = new THREE.MeshStandardMaterial({color: hc, emissive: hc, emissiveIntensity: .28, roughness: .55});
+  const H2 = H1.clone(); H2.side = THREE.DoubleSide;
+  for (const [k, d] of Object.entries(MDEF)) HL[k] = d.ds ? H2 : H1;
 }
+const hlHex = () => getComputedStyle(document.documentElement).getPropertyValue('--hl').trim() || '#e4570b';
 buildMats();
-const DIM = new THREE.MeshStandardMaterial({color: 0x9aa09c, transparent: true, opacity: .07, depthWrite: false});
+const DIM = new THREE.MeshStandardMaterial({color: 0x9aa09c, transparent: true, opacity: .035, depthWrite: false});
+// ตึกทึบ = ทุกชิ้นทึบ ยกเว้นกระจก/ตาข่าย · โปร่งใส = โครงสร้างเดิม ฝ้า ผนัง แผ่นหลังคา โปร่ง เห็นงานระบบข้างใน
+const GLASSY = new Set(['glass', 'glass_f', 'glassblock', 'net', 'translucent', 'hoist']);
+const SOFT = new Set(['aac', 'aac2', 'gyp', 'tile_w', 'door', 'upvc', 'trim', 'vent', 'metal_sheet', 'metal_sheet_y', 'alu']);
+let look = store.get('boq3d-look', 'xray');
+function applyLook(){
+  for (const [k, d] of Object.entries(MDEF)){
+    let o = d.o ?? 1;
+    if (look === 'solid'){ if (!GLASSY.has(k)) o = 1; }
+    else if (SOFT.has(k)) o = Math.min(o, .45);
+    const m = MAT[k]; m.opacity = o; m.transparent = o < 1; m.depthWrite = o >= .6; m.needsUpdate = true;
+  }
+  [...document.querySelectorAll('#looks button')].forEach(b => b.setAttribute('aria-pressed', b.dataset.k === look));
+  store.set('boq3d-look', look);
+}
+applyLook();
 const EDGE = new THREE.LineBasicMaterial({color: 0x28302c, transparent: true, opacity: .3});
 
 const V = p => new THREE.Vector3(p[0], p[2], p[1]);
@@ -501,6 +565,7 @@ function elVisible(e){
 function applyVisibility(){
   for (const e of ELS) e._g.visible = elVisible(e);
   visPick = pickables.filter(m => m.parent.visible);
+  render2d();
   if (renderer) renderer.clippingPlanes = planMode ? [new THREE.Plane(new THREE.Vector3(0, -1, 0), FL[floorSel].z + 1.3)] : [];
 }
 function applyExplode(){ for (const e of ELS) e._g.position.y = planMode || e.fl === 'site' ? 0 : flOff(e.fl); }
@@ -546,7 +611,7 @@ function setFloor(k, frame = true){
   if (frame && !planMode) setView(k === 'all' ? 'iso' : 'iso');
   else if (planMode) setView('top');
 }
-floorsEl.addEventListener('click', ev => { const b = ev.target.closest('.fbtn'); if (b) setFloor(b.dataset.f); });
+floorsEl.addEventListener('click', ev => { const b = ev.target.closest('.fbtn'); if (!b) return; if (b.dataset.f === 'all' && mode === '2d') setMode('3d'); setFloor(b.dataset.f); });
 $('#ex').addEventListener('input', ev => { explode = +ev.target.value; applyExplode(); applyVisibility(); });
 $('#ex').addEventListener('change', () => { const v = [...$('#views').children].find(x => x.getAttribute('aria-pressed') === 'true'); setView(v ? v.dataset.v : 'iso'); });
 const tLab = $('#tLab');
@@ -591,11 +656,13 @@ function paint(){
   const any = hl.size > 0;
   for (const e of ELS){
     const h = hl.has(e.id);
+    if (!e._meshes) continue;
     for (const m of e._meshes){
       m.material = h ? HL[m.userData.mk] : (any && dimOthers ? DIM : MAT[m.userData.mk]);
       if (m.children[0]) m.children[0].visible = !any || h || !dimOthers;
     }
   }
+  mark2d();
 }
 function selectEl(id){
   sel = {type: 'el', id}; hl = new Set([id]); paint(); renderDetail(); markList(EL[id].refs.map(r => r[0]), true);
@@ -604,7 +671,7 @@ function selectItem(iid, di = null, frame = true){
   sel = {type: 'item', id: iid, di};
   hl = new Set((itemEls[iid] || []).filter(r => di === null || r.di === di || r.di === -1).map(r => r.eid));
   paint(); renderDetail(); markList([iid], false);
-  if (frame) frameEls([...hl]);
+  if (frame){ frameEls([...hl]); frame2d(); }
 }
 function clearSel(){ sel = null; hl = new Set(); paint(); renderDetail(); markList([], false); }
 $('#clr').onclick = clearSel;
@@ -622,7 +689,7 @@ function pickAt(cx, cy){
   for (const h of hits){
     if (planMode && h.point.y > FL[floorSel].z + 1.31) continue;
     const e = EL[h.object.userData.eid];
-    if (e.cat === 'exist'){ ghost ??= e; continue; }
+    if (e.cat === 'exist' && look !== 'solid'){ ghost ??= e; continue; }
     return e;
   }
   return ghost;
@@ -727,7 +794,9 @@ function renderDetail(){
         <li>ปุ่ม "หมวดงาน" มุมขวาบน เปิดปิดแต่ละหมวดได้ · "งานรื้อถอน" (สีแดง) และ "งานชั่วคราว" ปิดไว้ก่อน</li>
         <li>แท็บ "เอกสาร BOQ" ด้านบน เปิดดูตาราง BOQ ทั้งเล่มเหมือนใน Google Sheet · กด "ดูใน 3D" ที่รายการไหนก็ได้เพื่อกลับมาดูชิ้นในโมเดล</li>
         <li>ปุ่ม "ชั้น" ด้านบนดูทีละชั้น · "แยกชั้น" ยกแต่ละชั้นแยกออกจากกัน · "ผังพื้น" ตัดที่ความสูง 1.30 ม. แบบแปลน</li>
-        <li>รายการสีเทา "ไม่มีรูปทรง" คืองานเหมาที่วาดเป็นชิ้นไม่ได้</li></ul></div>
+        <li>รายการสีเทา "ไม่มีรูปทรง" คืองานเหมาที่วาดเป็นชิ้นไม่ได้</li>
+        <li>ปุ่ม "2D ผัง" ดูแปลนทีละชั้นแบบแบบก่อสร้าง · "2D + 3D" ดูคู่กัน กดชิ้นฝั่งไหนก็ไฮไลต์ทั้งสองฝั่ง</li>
+        <li>"ตึกทึบ" ดูตึกเต็มเหมือนของจริง · "โปร่งใส" มองทะลุผนังเห็นท่อ สายไฟ และงานข้างใน</li></ul></div>
       ${D.public ? '<div class="note">หน้านี้เป็นฉบับเผยแพร่ ไม่แสดงราคา</div>' : ''}`;
     return;
   }
@@ -752,6 +821,166 @@ detailEl.addEventListener('click', ev => {
 detailEl.addEventListener('keydown', ev => {
   if (ev.key !== 'Enter' && ev.key !== ' ') return; const li = ev.target.closest('li.has'); if (li){ ev.preventDefault(); selectItem(li.dataset.iid, +li.dataset.di); }
 });
+
+// ---------- ผัง 2D (วาดจากพิกัดชิ้นเดียวกับ 3D — x = แนวกริด A→C, y = กริด 1 (หลัง) → 5 (หน้า)) ----------
+var svgEl = $('#svg2d'), mode = store.get('boq3d-mode', '3d');
+const stageEl = $('#stage'), vpaneEl = document.querySelector('.vpane'), tip2 = $('#tip2');
+const LAYER = {exist: 0, floor: 1, deck: 1, demo: 2, wall: 3, open: 4, misc: 5, san: 5, plumb: 6, steel: 6, sheet: 7, ceil: 8, elec: 9};
+const FIT = {x: -2.8, y: -2.2, w: 12.6, h: 18.4};
+let vb = {...FIT}, key2d = null, flLast = null;
+const hexc = n => '#' + n.toString(16).padStart(6, '0');
+const r3 = v => Math.round(v * 1000) / 1000;
+function partSvg(p, e){
+  const f = MDEF[p.m] || {c: 0x999999};
+  const poche = e.cat === 'wall' && (p.m === 'aac' || p.m === 'aac2' || p.m === 'gyp');
+  const col = poche ? 'var(--wall2d)' : p.m === 'exist_wall' ? 'var(--exwall2d)' : hexc(f.c);
+  const op = p.m === 'exist' ? .35 : poche || p.m === 'exist_wall' ? 1 : (f.o ?? 1) < .6 ? .45 : .92;
+  const st = `fill="${col}" fill-opacity="${op}" stroke="var(--edge)" stroke-opacity=".6" stroke-width="1"`;
+  const cls = e.cat === 'ceil' ? ' class="ceilo"' : '';
+  if (p.t === 'box'){
+    const w = Math.max(p.max[0] - p.min[0], .03), h = Math.max(p.max[1] - p.min[1], .03);
+    return [`<rect x="${r3(p.min[0])}" y="${r3(p.min[1])}" width="${r3(w)}" height="${r3(h)}" ${st}${cls}/>`, p.min[2]];
+  }
+  if (p.t === 'beam'){
+    const dx = p.b[0] - p.a[0], dy = p.b[1] - p.a[1], L = Math.hypot(dx, dy), z = Math.min(p.a[2], p.b[2]);
+    if (L < 1e-3) return [`<rect x="${r3(p.a[0] - p.w / 2)}" y="${r3(p.a[1] - p.w / 2)}" width="${r3(p.w)}" height="${r3(p.w)}" ${st}/>`, z];
+    const nx = -dy / L * p.w / 2, ny = dx / L * p.w / 2;
+    const pts = [[p.a[0] + nx, p.a[1] + ny], [p.b[0] + nx, p.b[1] + ny], [p.b[0] - nx, p.b[1] - ny], [p.a[0] - nx, p.a[1] - ny]];
+    return [`<polygon points="${pts.map(q => r3(q[0]) + ',' + r3(q[1])).join(' ')}" ${st}/>`, z];
+  }
+  if (p.t === 'cyl') return [`<circle cx="${r3(p.c[0])}" cy="${r3(p.c[1])}" r="${r3(Math.max(p.r, .05))}" ${st}/>`, p.c[2]];
+  if (p.t === 'quad') return [`<polygon points="${p.p.map(q => r3(q[0]) + ',' + r3(q[1])).join(' ')}" ${st}/>`, Math.min(...p.p.map(q => q[2]))];
+  if (p.t === 'pt'){
+    const r = Math.max(p.s, .07);
+    return [p.shape === 'box' ? `<rect x="${r3(p.c[0] - r)}" y="${r3(p.c[1] - r)}" width="${r3(2 * r)}" height="${r3(2 * r)}" ${st}/>`
+                              : `<circle cx="${r3(p.c[0])}" cy="${r3(p.c[1])}" r="${r3(r)}" ${st}/>`, p.c[2]];
+  }
+  if (p.t === 'pipe'){
+    const xs = p.pts.map(q => q[0]), ys = p.pts.map(q => q[1]), z = Math.min(...p.pts.map(q => q[2]));
+    const flat = Math.max(...xs) - Math.min(...xs) < .01 && Math.max(...ys) - Math.min(...ys) < .01;
+    if (flat) return [`<circle cx="${r3(xs[0])}" cy="${r3(ys[0])}" r="${r3(Math.max(p.r * 1.6, .05))}" fill="${col}" stroke="var(--edge)" stroke-opacity=".6"/>`, z];
+    return [`<polyline class="ln" points="${p.pts.map(q => r3(q[0]) + ',' + r3(q[1])).join(' ')}" fill="none" stroke="${col}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`, z];
+  }
+  return ['', 0];
+}
+function setVB(){ svgEl.setAttribute('viewBox', `${vb.x} ${vb.y} ${vb.w} ${vb.h}`); }
+function fit2d(){ vb = {...FIT}; setVB(); }
+function render2d(force = false){
+  if (!mode || mode === '3d') return;
+  const fl = floorSel;
+  const k = fl + '|' + D.cats.map(c => catOn[c.k] ? 1 : 0).join('');
+  if (k === key2d && !force) return;
+  key2d = k;
+  $('#empty2d').hidden = fl !== 'all';
+  if (fl === 'all'){ svgEl.innerHTML = ''; $('#ptitle').hidden = true; return; }
+  $('#ptitle').hidden = false;
+  $('#ptitle').textContent = 'ผัง 2D · ' + FL[fl].name + (FL[fl].lvl ? ' ระดับ ' + FL[fl].lvl : '');
+  const list = [];
+  for (const e of ELS){
+    if (e.fl !== fl || !catOn[e.cat] || LAYER[e.cat] === undefined) continue;
+    let z = 1e9, body = '';
+    for (const p of e.parts){ const [sv, pz] = partSvg(p, e); body += sv; z = Math.min(z, pz); }
+    list.push({e, z, body});
+  }
+  list.sort((a, b) => (LAYER[a.e.cat] - LAYER[b.e.cat]) || (a.z - b.z));
+  let h = '<g class="grid">';
+  GX.forEach(x => h += `<line x1="${x}" y1="-1.5" x2="${x}" y2="14.6"/>`);
+  GY.forEach(y => h += `<line x1="-1.5" y1="${y}" x2="9.4" y2="${y}"/>`);
+  h += '</g>';
+  h += list.map(o => `<g class="e" data-eid="${o.e.id}">${o.body}</g>`).join('');
+  h += '<g class="bub">';
+  ['A', 'B', 'C'].forEach((n, i) => h += `<circle cx="${GX[i]}" cy="-1.5" r=".36"/><text x="${GX[i]}" y="-1.5">${n}</text>`);
+  ['1', '2', '3', '4', '5'].forEach((n, i) => h += `<circle cx="-1.5" cy="${GY[i]}" r=".36"/><text x="-1.5" y="${GY[i]}">${n}</text>`);
+  h += '</g>';
+  D.rooms.filter(r => r.fl === fl).forEach(r => h += `<text class="rm" x="${r.p[0]}" y="${r.p[1]}">${esc(r.name)}</text>`);
+  h += `<text class="side" x="3.95" y="14.95">ด้านหน้า · ถนนส่วนบุคคล 5 ม.</text>`;
+  h += `<text class="side" x="0" y="0" transform="translate(9.9 6.65) rotate(90)">ถนนส่วนบุคคล 8 ม.</text>`;
+  h += `<text class="side" x="0" y="0" transform="translate(-2.3 6.65) rotate(-90)">บ้านข้างเคียง</text>`;
+  svgEl.innerHTML = h;
+  if (fl !== flLast){ flLast = fl; fit2d(); }
+  mark2d();
+}
+function mark2d(){
+  if (!svgEl || !mode || mode === '3d') return;
+  svgEl.classList.toggle('sel', hl.size > 0 && dimOthers);
+  svgEl.querySelectorAll('.e').forEach(g => g.classList.toggle('hl', hl.has(g.dataset.eid)));
+}
+function frame2d(){
+  if (mode === '3d' || floorSel === 'all' || !hl.size) return;
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  svgEl.querySelectorAll('.e.hl').forEach(g => { const b = g.getBBox(); x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y); x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height); });
+  if (x0 > x1) return;
+  const W = svgEl.clientWidth || 1, H = svgEl.clientHeight || 1;
+  let w = Math.max(x1 - x0 + 2, 6), h = Math.max(y1 - y0 + 2, 6);
+  if (w / h < W / H) w = h * W / H; else h = w * H / W;
+  vb = {x: (x0 + x1) / 2 - w / 2, y: (y0 + y1) / 2 - h / 2, w, h}; setVB();
+}
+function toSvg(cx, cy){ const pt = svgEl.createSVGPoint(); pt.x = cx; pt.y = cy; return pt.matrixTransform(svgEl.getScreenCTM().inverse()); }
+function zoomAt(cx, cy, k){
+  const nw = vb.w * k; if (nw < 1.2 || nw > 80) return;
+  const p = toSvg(cx, cy);
+  vb = {x: p.x - (p.x - vb.x) * k, y: p.y - (p.y - vb.y) * k, w: nw, h: vb.h * k}; setVB();
+}
+svgEl.addEventListener('wheel', ev => { ev.preventDefault(); zoomAt(ev.clientX, ev.clientY, Math.exp(ev.deltaY * .0016)); }, {passive: false});
+const ptrs = new Map(); let down2 = null, pinch = null;
+svgEl.addEventListener('pointerdown', ev => {
+  ptrs.set(ev.pointerId, {x: ev.clientX, y: ev.clientY}); svgEl.setPointerCapture(ev.pointerId);
+  if (ptrs.size === 1) down2 = {x: ev.clientX, y: ev.clientY, g: ev.target.closest('.e'), moved: 0};
+  else { down2 = null; const [a, b] = [...ptrs.values()]; pinch = Math.hypot(a.x - b.x, a.y - b.y); }
+});
+svgEl.addEventListener('pointermove', ev => {
+  if (!ptrs.has(ev.pointerId)){
+    if (ev.pointerType !== 'mouse') return;
+    const g = ev.target.closest('.e'); const r = $('#plan2d').getBoundingClientRect();
+    if (g){ tip2.hidden = false; tip2.textContent = EL[g.dataset.eid].name; tip2.style.left = (ev.clientX - r.left) + 'px'; tip2.style.top = (ev.clientY - r.top) + 'px'; }
+    else tip2.hidden = true;
+    return;
+  }
+  const prev = ptrs.get(ev.pointerId); ptrs.set(ev.pointerId, {x: ev.clientX, y: ev.clientY});
+  if (ptrs.size === 2 && pinch){
+    const [a, b] = [...ptrs.values()]; const d = Math.hypot(a.x - b.x, a.y - b.y);
+    zoomAt((a.x + b.x) / 2, (a.y + b.y) / 2, pinch / d); pinch = d; return;
+  }
+  if (ptrs.size !== 1) return;
+  tip2.hidden = true;
+  const upp = Math.max(vb.w / svgEl.clientWidth, vb.h / svgEl.clientHeight);
+  const dx = ev.clientX - prev.x, dy = ev.clientY - prev.y;
+  if (down2) down2.moved += Math.abs(dx) + Math.abs(dy);
+  if (down2 && down2.moved < 5) return;
+  svgEl.classList.add('drag');
+  vb.x -= dx * upp; vb.y -= dy * upp; setVB();
+});
+function up2(ev){
+  ptrs.delete(ev.pointerId); svgEl.classList.remove('drag');
+  if (ptrs.size < 2) pinch = null;
+  if (ev.type === 'pointerup' && down2 && down2.moved < 5 && ptrs.size === 0){
+    if (down2.g) selectEl(down2.g.dataset.eid); else clearSel();
+  }
+  if (ptrs.size === 0) down2 = null;
+}
+svgEl.addEventListener('pointerup', up2); svgEl.addEventListener('pointercancel', up2);
+svgEl.addEventListener('pointerleave', () => { tip2.hidden = true; });
+document.querySelector('.zoom2d').addEventListener('click', ev => {
+  const b = ev.target.closest('button'); if (!b) return;
+  const r = svgEl.getBoundingClientRect();
+  if (b.dataset.z === 'fit') fit2d(); else zoomAt(r.left + r.width / 2, r.top + r.height / 2, b.dataset.z === 'in' ? .75 : 1.33);
+});
+const HINT = {'3d': 'คลิกชิ้นเพื่อดูรายการ BOQ · ลากเพื่อหมุน · ล้อเลื่อน/บีบนิ้วเพื่อซูม · คลิกขวาลากเพื่อเลื่อน · Esc ล้างการเลือก',
+  '2d': 'คลิกชิ้นเพื่อดูรายการ BOQ · ลากเพื่อเลื่อน · ล้อเลื่อน/บีบนิ้วเพื่อซูม · เส้นประ = ขอบฝ้าเพดาน · Esc ล้างการเลือก',
+  split: 'กดชิ้นฝั่งไหนก็ได้ ไฮไลต์ทั้งผัง 2D และโมเดล 3D พร้อมกัน · Esc ล้างการเลือก'};
+function setMode(m){
+  mode = m; store.set('boq3d-mode', m);
+  stageEl.dataset.mode = m; vpaneEl.classList.toggle('m2d', m === '2d'); vpaneEl.classList.toggle('msplit', m === 'split');
+  [...$('#modes').children].forEach(b => b.setAttribute('aria-pressed', b.dataset.m === m));
+  $('#hint').textContent = HINT[m];
+  if (m !== '3d' && floorSel === 'all') setFloor('f1', false);
+  if (m !== '3d' && levelMode === 'plan') setLevel('all');
+  key2d = null; flLast = null; render2d();
+  requestAnimationFrame(() => { resize(); if (m !== '2d'){ const v = [...$('#views').children].find(x => x.getAttribute('aria-pressed') === 'true'); setView(v ? v.dataset.v : 'iso'); } if (m !== '3d'){ fit2d(); if (hl.size) frame2d(); } });
+}
+$('#modes').addEventListener('click', ev => { const b = ev.target.closest('button'); if (b) setMode(b.dataset.m); });
+$('#looks').addEventListener('click', ev => { const b = ev.target.closest('button'); if (!b) return; look = b.dataset.k; applyLook(); paint(); });
+new ResizeObserver(() => stageEl.classList.toggle('narrow', stageEl.clientWidth < 760)).observe(stageEl);
 
 // ---------- เอกสาร BOQ ----------
 const DOC = D.doc;
@@ -840,7 +1069,7 @@ function renderSummary(){
 function renderQs(q){
   const qs = DOC.questions.map((x, i) => [i + 1, ...x]).filter(x => !q || x.join(' ').toLowerCase().includes(q));
   if (!qs.length) return '<p class="empty">ไม่พบข้อที่ตรงกับคำค้น</p>';
-  return '<div class="qs">' + qs.map(([n, t, f, a, e]) => `<div class="q"><span class="qn">${n}</span><div><h4>${esc(t)}</h4></div>
+  return '<div class="qs">' + qs.map(([n, t, f, a, e]) => `<div class="qcard"><span class="qn">${n}</span><div><h4>${esc(t)}</h4></div>
     <dl><dt>ที่พบในแบบ</dt><dd>${esc(f)}</dd><dt>BOQ นี้คิดไว้อย่างไร</dt><dd class="as">${esc(a)}</dd><dt>ผลถ้าเปลี่ยน / ต้องขอ</dt><dd>${esc(e)}</dd></dl></div>`).join('') + '</div>';
 }
 function renderDoc(){
@@ -870,7 +1099,7 @@ function goto3D(iid){
   ies.forEach(r => { const c = EL[r.eid].cat; if (!catOn[c]) setCat(c, true); }); catCount();
   const fls = [...new Set(ies.map(r => EL[r.eid].fl))];
   if (levelMode === 'plan') setLevel('all');
-  setFloor(fls.length === 1 && FL[fls[0]] ? fls[0] : 'all', false);
+  setFloor(fls.length === 1 && FL[fls[0]] ? fls[0] : (mode !== '3d' && FL[fls[0]] ? fls[0] : 'all'), false);
   requestAnimationFrame(() => { resize(); selectItem(iid); markList([iid], true); });
 }
 function setTab(t){
@@ -887,7 +1116,7 @@ function applyTheme(){
   const cs = getComputedStyle(document.documentElement);
   scene.background = new THREE.Color(cs.getPropertyValue('--scene').trim() || '#e3e7e2');
   EDGE.color = new THREE.Color(cs.getPropertyValue('--edge').trim() || '#28302c');
-  const a = new THREE.Color(accentHex()); Object.values(HL).forEach(m => m.emissive = a);
+  const a = new THREE.Color(hlHex()); new Set(Object.values(HL)).forEach(m => { m.color = a; m.emissive = a; });
 }
 applyTheme();
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
@@ -918,10 +1147,11 @@ function loop(now){
     camera.position.lerpVectors(anim.p0, anim.p1, s); controls.target.lerpVectors(anim.t0v, anim.t1, s);
     if (k >= 1) anim = null;
   }
-  if (controls && !pModel.hidden){ controls.update(); renderer.render(scene, camera); updateLabels(); }
+  if (controls && !pModel.hidden && mode !== '2d'){ controls.update(); renderer.render(scene, camera); updateLabels(); }
   requestAnimationFrame(loop);
 }
 applyVisibility(); applyExplode(); renderList(); renderDetail(); resize();
+setMode(mode);
 if (location.hash === '#doc') setTab('doc');
 requestAnimationFrame(loop);
 </script>
